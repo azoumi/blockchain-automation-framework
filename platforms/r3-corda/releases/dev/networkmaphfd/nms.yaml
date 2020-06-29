@@ -1,0 +1,79 @@
+apiVersion: flux.weave.works/v1beta1
+kind: HelmRelease
+metadata:
+  name: networkmaphfd
+  annotations:
+    flux.weave.works/automated: "false"
+  namespace: supplychainhfd-ns
+spec:
+  releaseName: networkmaphfd
+  chart:
+    path: platforms/r3-corda/charts/nms-tls
+    git: ssh://git@github.com/azoumi/blockchain-automation-framework.git
+    ref: develop
+  values:
+    nodeName: networkmaphfd
+    metadata:
+      namespace: supplychainhfd-ns
+    image:
+      authusername: sa
+      containerName: index.docker.io/hyperledgerlabs/networkmap-linuxkit:latest
+      env:
+      - name: NETWORKMAP_PORT
+        value: 8080
+      - name: NETWORKMAP_ROOT_CA_NAME
+        value: CN=Network Map,OU=FRA,O=FRA,L=Berlin,C=DE
+      - name: NETWORKMAP_TLS
+        value: true
+      - name: NETWORKMAP_DB
+        value: /opt/networkmap/db
+      - name: DB_USERNAME
+        value: networkmaphfd
+      - name: NETWORKMAP_AUTH_USERNAME
+        value: sa
+      - name: DB_URL
+        value: mongodb-networkmaphfd
+      - name: DB_PORT
+        value: 27017
+      - name: DATABASE
+        value: admin
+      - name: NETWORKMAP_CACHE_TIMEOUT
+        value: 60S
+      - name: NETWORKMAP_MONGOD_DATABASE
+        value: networkmap
+      imagePullSecret: regcred
+      tlsCertificate: true
+      initContainerName: index.docker.io/hyperledgerlabs/alpine-utils:1.0
+      mountPath:
+          basePath: /opt/networkmap
+    storage:
+      memory: 512Mi
+      mountPath: "/opt/h2-data"
+      name: awsstorageclass
+    vault:
+      address: http://vault.internal.dev.aws.blockchaincloudpoc-develop.com:8200
+      role: vault-role
+      authpath: cordanetworkmaphfd
+      serviceaccountname: vault-auth
+      secretprefix: networkmaphfd
+      certsecretprefix: networkmaphfd/certs
+      dbcredsecretprefix: networkmaphfd/credentials/mongodb
+      secretnetworkmappass: networkmaphfd/credentials/userpassword
+      tlscertsecretprefix: networkmaphfd/tlscerts
+      dbcertsecretprefix: networkmaphfd/certs
+    healthcheck:
+      readinesscheckinterval: 10
+      readinessthreshold: 15
+      dburl: mongodb-networkmaphfd:27017
+    service:
+      port: 8080
+      targetPort: 8080
+      type: ClusterIP
+      annotations: {}
+    deployment:
+      annotations: {}
+    pvc:
+      annotations: {}
+    ambassador:
+      external_url_suffix: rc.dev.aws.blockchaincloudpoc-develop.com
+      
