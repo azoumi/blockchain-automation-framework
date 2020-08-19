@@ -5,7 +5,9 @@ pwd
 cat -n etc/notary.conf
 {{ end }}
 
-d=${date -d '+1 hour' --iso-8601=seconds}
+d=$(date -d '+1 hour' --iso-8601=seconds)
+
+export updateDate="${d%??????}.000Z"
 
 # For now, we are using a 'hardcoded' nodeInfo filename, to avoid having to save the hash in Vault
 envsubst <<"EOF" > additional-node-infos/network-parameters-initial.conf.tmp
@@ -21,7 +23,7 @@ maxTransactionSize = 10485760
 eventHorizonDays = 1
 parametersUpdate {
     description = "Test update"
-    updateDeadline = "${d}" # ISO-8601 time, substitute it with update deadline
+    updateDeadline = "${updateDate}" # ISO-8601 time, substitute it with update deadline
 }
 EOF
 
