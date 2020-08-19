@@ -314,5 +314,4 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.nodeName }}-pvc-h2
         - name: notary-nodeinfo
-          emptyDir:
-            medium: Memory
+          emptyDir: {}
