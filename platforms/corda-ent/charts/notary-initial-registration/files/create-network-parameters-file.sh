@@ -26,10 +26,6 @@ minimumPlatformVersion = 1
 maxMessageSize = 10485760
 maxTransactionSize = 10485760
 eventHorizonDays = 1
-parametersUpdate {
-    description = "Test update"
-    updateDeadline = "${updateDate}" # ISO-8601 time, substitute it with update deadline
-}
 EOF
 
 mv additional-node-infos/network-parameters-initial.conf.tmp additional-node-infos/network-parameters-initial.conf
