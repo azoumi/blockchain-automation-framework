@@ -49,6 +49,7 @@ else
     echo "Sleeping for requested ${HOW_LONG} seconds before disappearing."
     echo
     touch {{ .Values.configPath }}/network-parameters-initial-set-succesfully
+    ls {{ .Values.configPath }}
     echo "# This is a file with _example_ content needed for updating network parameters" > {{ .Values.configPath }}/network-parameters-update-example.conf
     cat {{ .Values.configPath }}/network-parameters-initial.conf >> {{ .Values.configPath }}/network-parameters-update-example.conf
 cat << EOF >> {{ .Values.configPath }}/network-parameters-update-example.conf
