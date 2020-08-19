@@ -11,10 +11,6 @@ then
     do
         sleep 1
     done
-else
-    echo "File is present, inital registration already set"
-    sleep 1
-    exit 0
 fi
 
 echo "Waiting for notary-nodeinfo/network-parameters-initial.conf ... done."
@@ -48,7 +44,8 @@ else
     echo "No errors."
     echo "Sleeping for requested ${HOW_LONG} seconds before disappearing."
     echo
-    touch {{ .Values.configPath }}/network-parameters-initial-set-succesfully
+    # touch {{ .Values.configPath }}/network-parameters-initial-set-succesfully
+    echo 'content in here' > {{ .Values.configPath }}/network-parameters-initial-set-succesfully
     ls {{ .Values.configPath }}
     echo "# This is a file with _example_ content needed for updating network parameters" > {{ .Values.configPath }}/network-parameters-update-example.conf
     cat {{ .Values.configPath }}/network-parameters-initial.conf >> {{ .Values.configPath }}/network-parameters-update-example.conf
