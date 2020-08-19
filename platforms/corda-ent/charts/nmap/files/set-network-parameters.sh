@@ -11,12 +11,17 @@ then
     do
         sleep 1
     done
+else
+    echo "File is present, inital registration already set"
+    sleep 1
+    exit 0
 fi
 
 echo "Waiting for notary-nodeinfo/network-parameters-initial.conf ... done."
 ls -al notary-nodeinfo/network-parameters-initial.conf
 cp notary-nodeinfo/network-parameters-initial.conf {{ .Values.configPath }}/
 cat {{ .Values.configPath }}/network-parameters-initial.conf
+
 
 echo "Setting initial network parameters ..."
 java -jar {{ .Values.jarPath }}/networkmap.jar \
