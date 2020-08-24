@@ -53,6 +53,7 @@ else
     echo 'content in here' > {{ .Values.configPath }}/network-parameters-initial-set-succesfully
     ls {{ .Values.configPath }}
     cat {{ .Values.configPath }}/network-parameters-initial-set-succesfully
+    echo {{ .Values.configPath }}
     echo "Done writing something to file"
     echo "# This is a file with _example_ content needed for updating network parameters" > {{ .Values.configPath }}/network-parameters-update-example.conf
     cat {{ .Values.configPath }}/network-parameters-initial.conf >> {{ .Values.configPath }}/network-parameters-update-example.conf
