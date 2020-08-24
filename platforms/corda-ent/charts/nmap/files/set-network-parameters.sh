@@ -4,7 +4,10 @@ set -x
 {{ end }}
 
 echo "Waiting for notary-nodeinfo/network-parameters-initial.conf ..."
-
+echo "========================================"
+ls {{ .Values.configPath }}
+cat {{ .Values.configPath }}/network-parameters-initial-set-succesfully
+echo "========================================"
 if [ ! -f {{ .Values.configPath }}/network-parameters-initial-set-succesfully ]
 then
     until [ -f notary-nodeinfo/network-parameters-initial.conf ]
@@ -38,7 +41,8 @@ then
     echo "Going to sleep for requested ${HOW_LONG} seconds to let you login and investigate."
     echo
 else
-    HOW_LONG={{ .Values.sleepTime }}
+    HOW_LONG=0 
+    # {{ .Values.sleepTime }} needs to be filled in
     echo
     echo "Network Map: initial network parameters have been set."
     echo "No errors."
@@ -48,6 +52,7 @@ else
     echo "Writing something to file"
     echo 'content in here' > {{ .Values.configPath }}/network-parameters-initial-set-succesfully
     ls {{ .Values.configPath }}
+    cat {{ .Values.configPath }}/network-parameters-initial-set-succesfully
     echo "Done writing something to file"
     echo "# This is a file with _example_ content needed for updating network parameters" > {{ .Values.configPath }}/network-parameters-update-example.conf
     cat {{ .Values.configPath }}/network-parameters-initial.conf >> {{ .Values.configPath }}/network-parameters-update-example.conf
