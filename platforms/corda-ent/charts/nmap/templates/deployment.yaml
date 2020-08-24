@@ -217,7 +217,7 @@ spec:
           cp -r CM-FILES/*.conf etc/
           cp -r CM-FILES/*.sh bin/
           chmod +x bin/*
-          if [ ! -f /opt/corda/etc/network-parameters-initial-set-succesfully ]
+          if [ ! -f {{ .Values.configPath }}/network-parameters-initial-set-succesfully ]
           then
             echo "Setting network parameters for deployment..."
             bin/set-network-parameters.sh
