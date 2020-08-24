@@ -1,0 +1,68 @@
+apiVersion: flux.weave.works/v1beta1
+kind: HelmRelease
+metadata:
+  name: cenmhfdnmap
+  namespace: cenmhfd-ent
+  annotations:
+    flux.weave.works/automated: "false"
+spec:
+  releaseName: cenmhfdnmap
+  chart:
+    git: ssh://git@github.com/azoumi/blockchain-automation-framework.git
+    ref: bug910
+    path: platforms/corda-ent/charts/nmap
+  values:
+    nodeName: networkmap
+    idmanName: idman
+    metadata:
+      namespace: cenmhfd-ent
+    notaryName: notary
+    storage:
+      name: cenmsc
+    replicas: 1
+    image:
+      initContainerName: index.docker.io/hyperledgerlabs/alpine-utils:1.0
+      imagepullsecret: regcred
+    dockerImage:
+      name: corda/enterprise-networkmap:1.2-zulu-openjdk8u242
+      pullPolicy: Always
+      imagePullSecret: regcred
+    acceptLicense: YES
+    vault:
+      role: vault-role
+      authpath: cordaentcenmhfd
+      serviceaccountname: vault-auth
+      address: http://vault.internal.dev.aws.blockchaincloudpoc-develop.com:8081
+      certsecretprefix: secret/cenmhfd
+    ambassador:
+      external_url_suffix: rc.dev.aws.blockchaincloudpoc-develop.com
+    volume:
+      baseDir: /opt/corda
+    service:
+      port: 10000
+    serviceInternal:
+      port: 5050
+    shell:
+      sshdPort: 2222
+      user: nmap
+      password: nmapP
+    database:
+      driverClassName: "org.h2.Driver"
+      url: "jdbc:h2:file:./h2/networkmap-persistence;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=10000;WRITE_DELAY=0;AUTO_SERVER_PORT=0"
+      user: networkmap-db-user
+      password: networkmap-db-password
+      runMigration: "true"
+    identityManager:
+      host: idman.cenmhfd-ent
+      port: 5052
+    revocation:
+      port: 5053
+    cordaJarMx: 1
+    healthCheckNodePort: 0
+    jarPath: bin
+    bashDebug: false
+    configPath: etc
+    sleepTimeAfterError: 120
+    healthcheck:
+      readinesscheckinterval: 10
+      readinessthreshold: 15
