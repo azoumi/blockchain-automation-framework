@@ -7,9 +7,9 @@ echo "Waiting for notary-nodeinfo/network-parameters-initial.conf ..."
 echo "========================================"
 ls {{ .Values.configPath }}
 echo {{ .Values.configPath }}
-cat {{ .Values.configPath }}/network-parameters-initial-set-succesfully
+cat /opt/corda/etc/network-parameters-initial-set-succesfully
 echo "========================================"
-if [ ! -f {{ .Values.configPath }}/network-parameters-initial-set-succesfully ]
+if [ ! -f /opt/corda/etc/network-parameters-initial-set-succesfully ]
 then
     until [ -f notary-nodeinfo/network-parameters-initial.conf ]
     do
