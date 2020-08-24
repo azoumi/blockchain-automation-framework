@@ -217,10 +217,12 @@ spec:
           cp -r CM-FILES/*.conf etc/
           cp -r CM-FILES/*.sh bin/
           chmod +x bin/*
-          if [ ! -f {{ .Values.configPath }}/network-parameters-initial-set-succesfully ]
+          if [ ! -f /opt/corda/etc/network-parameters-initial-set-succesfully ]
           then
             echo "Setting network parameters for deployment..."
             bin/set-network-parameters.sh
+          else
+            echo "Already set, no need to wait..."
           fi
         volumeMounts:
         - name: nmap-conf
