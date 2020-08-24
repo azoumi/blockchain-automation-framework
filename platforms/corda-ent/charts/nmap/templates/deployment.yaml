@@ -304,8 +304,8 @@ spec:
           emptyDir:
             medium: Memory
         - name: nmap-etc
-          emptyDir:
-            medium: Memory
+          persistentVolumeClaim:
+            claimName: {{ .Values.nodeName }}-notary-nodeinfo
         - name: nmap-conf
           configMap:
             name: {{ .Values.nodeName }}-conf
@@ -316,5 +316,5 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.nodeName }}-pvc-h2
         - name: notary-nodeinfo
-          persistentVolumeClaim:
-            claimName: {{ .Values.nodeName }}-notary-nodeinfo
+          emptyDir:
+            medium: Memory
