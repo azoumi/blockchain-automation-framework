@@ -222,7 +222,7 @@ spec:
             echo "Setting network parameters for deployment..."
             bin/set-network-parameters.sh
           else
-            echo "Already set, no need to wait..."
+            echo "Already set, no need to set network parameters"
           fi
         volumeMounts:
         - name: nmap-conf
