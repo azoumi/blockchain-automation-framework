@@ -304,6 +304,8 @@ spec:
           emptyDir:
             medium: Memory
         - name: nmap-etc
+          persistentVolumeClaim:
+            claimName: {{ .Values.nodeName }}-etc
         - name: nmap-conf
           configMap:
             name: {{ .Values.nodeName }}-conf
