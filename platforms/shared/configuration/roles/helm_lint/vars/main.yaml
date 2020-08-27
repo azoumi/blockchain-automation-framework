@@ -18,6 +18,8 @@ charts:
   mongodb: mongodb
   doorman: doorman
   db: h2
+  notarydb: h2
+  nodedb: h2
   notaryjob: notary-initial-registration
   nodejob: node-initial-registration
   notarynode: notary
