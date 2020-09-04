@@ -1,0 +1,65 @@
+apiVersion: flux.weave.works/v1beta1
+kind: HelmRelease
+metadata:
+  name: cenmhfdnotary-initial-registration
+  namespace: cenmhfd-ent
+  annotations:
+    flux.weave.works/automated: "false"
+spec:
+  releaseName: cenmhfdnotary-initial-registration
+  chart:
+    git: ssh://git@github.com/azoumi/blockchain-automation-framework.git
+    ref: origin/feature/corda-firewall-disable-option
+    path: platforms/corda-ent/charts/notary-initial-registration
+  values:
+    nodeName: notary-initial-registration
+    nodePath: notary
+    metadata:
+      namespace: cenmhfd-ent
+    image:
+      initContainerName: index.docker.io/hyperledgerlabs/alpine-utils:1.0
+      imagepullsecret: regcred
+    dockerImage:
+      notaryContainerName: adopblockchaincloud0502.azurecr.io/corda_image_notary_1.2:latest
+      pullPolicy: Always
+      imagePullSecret: regcred
+    acceptLicense: YES
+    cenmServices:
+      idmanName: idman
+      networkmapName: networkmap
+    vault:
+      address: http://vault.internal.dev2.aws.blockchaincloudpoc-develop.com:20001
+      certsecretprefix: secret/cenmhfd
+      serviceaccountname: vault-auth
+      role: vault-role
+      authpath: cordaentcenmhfd
+    volume:
+      baseDir: /opt/corda
+    devMode: false
+    ambassador_p2pPort: 15077
+    p2pPort: 10002
+    rpcSettingsAddress: "0.0.0.0"
+    rpcSettingsAddressPort: 10003
+    rpcSettingsAdminAddress: "localhost"
+    rpcSettingsAdminAddressPort: 10770
+    rpcSettingsStandAloneBroker: false
+    rpcSettingsUseSsl: false
+    networkServices:
+      doormanURL: https://idmanhfd.rc.dev2.aws.blockchaincloudpoc-develop.com:8443
+      networkMapURL: https://networkmaphfd.rc.dev2.aws.blockchaincloudpoc-develop.com:8443
+    notary:
+      validating: True
+    legalName: O=Notary,OU=Notary2,L=London,C=GB
+    emailAddress: dev@baf.com
+    notaryPublicIP: notary.rc.dev2.aws.blockchaincloudpoc-develop.com
+    rpcUsers:
+      username: notary
+      password: notaryP
+    healthCheckNodePort: 0
+    jarPath: bin
+    bashDebug: false
+    configPath: etc
+    sleepTimeAfterError: 120
+    healthcheck:
+      readinesscheckinterval: 10
+      readinessthreshold: 15
