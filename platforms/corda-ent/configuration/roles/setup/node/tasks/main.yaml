@@ -65,6 +65,7 @@
     networkmap_name: "{{ network | json_query('orderers[?type==`networkmap`].name') | first }}"
     external_url_suffix: "{{ org.external_url_suffix }}"
     ambassador_p2p_port: "{{ peer.p2p.ambassador }}"
+    firewall_enabled: "{{ peer.firewall.enabled }}"
   loop: "{{ org.services.peers }}"
   loop_control:
     loop_var: peer
