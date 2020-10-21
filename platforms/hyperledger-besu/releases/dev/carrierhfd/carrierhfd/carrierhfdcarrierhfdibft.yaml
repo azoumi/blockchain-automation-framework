@@ -1,0 +1,87 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: carrierhfdcarrierhfdibft
+  namespace: carrierhfd-bes
+  annotations:
+    flux.weave.works/automated: "false"
+spec:
+  releaseName: carrierhfdcarrierhfdibft
+  chart:
+    git: ssh://git@github.com/azoumi/blockchain-automation-framework.git
+    ref: demo/besu
+    path: platforms/hyperledger-besu/charts/node_orion 
+  values:
+    replicaCount: 1
+
+    healthcheck:
+      readinessthreshold: 100
+      readinesscheckinterval: 5
+
+    staticnodes:
+      - "enode://5fab1411e04b1aa2df0f30c87d6c35d57c59ab748d333b8b859fdad47bf7d9c95786365ff0de1444bbeebb37f45888e1ae3891225e5a056e23c9038b3fadb541@54.171.205.179:15050"
+      - "enode://274cc3318a790e1b379f430953565c2ca0246cb994563df1a814dd519ca0ae0ebc39ca3a6a17a0444c8b24668de73ca96a2c72c1840b65cc452826344a7bcb45@54.171.205.179:15060"
+      - "enode://e69f505f8e956eaea14b7eb6b5c7ffefacd3b2969d157b777e971cafdfa62b6d3f670377dd03367dd49a3306ea8225e82c083631c57436b22f91ebcaa9ff3932@54.171.205.179:15070"
+      - "enode://e8eee5a08d9c9bbb9e5a6f612dde2c38a372b8538f2cd74f3de84ce7cb5b3db5e4ab05cb50f41c2b9190f99f9cb9012862516bf5bda7242f3d8c0b9d8abecbd7@54.171.205.179:15080"
+      - "enode://2bb308b24c80ff43fb25dd73f20f5ddfe81d83020107e610f31cb4394f90eb5f4e779a9f6d772e91d4b7a34e025b86d7d6ad86a1bba24aa870e05c9626ab4a84@54.171.205.179:15010"
+      - "enode://3a37a9867625ba264475c0c2fd0f89403744fb46628f4a432f5996e11213003c736b9cb1a427edb9755a0efe7d831a7e8e230dc26405e1cbc19fa205ae96a920@54.171.205.179:15020"
+      - "enode://c75a3322b0d58eada73d0bbc3454999ef7766c903d22d9b002e04f9bd17ee71769146e2b51e0dc90e5d25248078421f40d281db9a873806712d75e64814e87c0@54.171.205.179:15030"
+      - "enode://ca4f5d3121b9c5ef591db52ce229c1f8f65e7d867d0af683308a2f852151011e590ab300a37a7ffda7656786412e4b142dc7a6cfb134fc2bbd9fb2a2f63f6d2f@54.171.205.179:15040"
+
+    metadata:
+      namespace: carrierhfd-bes
+      labels:
+
+    liveliness_check:
+      enabled: false
+
+    proxy:
+      provider: ambassador
+      external_url: carrierhfd.bs.dev2.aws.blockchaincloudpoc-develop.com
+      p2p: 15010
+      rpc: 15011
+      tmport: 15013
+
+    images:
+      node: hyperledger/besu:1.4.4
+      alpineutils: hyperledgerlabs/alpine-utils:1.0
+      orion: pegasyseng/orion:1.5.2
+
+    node:
+      name: carrierhfd
+      consensus: ibft
+      subject: O=Carrier,OU=Carrier,L=London,C=GB
+      mountPath: /etc/genesis
+      servicetype: ClusterIP
+      imagePullSecret: regcred
+      ports:
+        p2p: 30303
+        rpc: 8545
+        ws: 8546
+
+    orion:
+      name: orion
+      tls: True
+      confdir: /etc/config
+      url: "https://carrierhfd.bs.dev2.aws.blockchaincloudpoc-develop.com"
+      nodelist: "\"https://manufacturerhfd.bs.dev2.aws.blockchaincloudpoc-develop.com:15023\",\"https://storehfd.bs.dev2.aws.blockchaincloudpoc-develop.com:15033\",\"https://warehousehfd.bs.dev2.aws.blockchaincloudpoc-develop.com:15043\""
+      trust: ca-or-tofu
+      ports:
+        nodeport: 8888
+        clientport: 8080
+
+    storage:
+      storageclassname: awsstorageclass
+      storagesize: 1Gi
+
+    vault:
+      address: http://vault.internal.dev2.aws.blockchaincloudpoc-develop.com:20001
+      secretprefix: secret/carrierhfd-bes/crypto/carrierhfd
+      serviceaccountname: vault-auth
+      keyname: data
+      oriondir: orion
+      tlsdir: tls
+      role: vault-role
+      authpath: besucarrierhfd
+
+    genesis: ewogICJjb25maWciOiB7CiAgICAiY2hhaW5JZCI6IDIwMTgsCiAgICAiY29uc3RhbnRpbm9wbGVmaXhibG9jayI6IDAsCiAgICAiY29udHJhY3RTaXplTGltaXQiOiAyMTQ3NDgzNjQ3LAogICAgImliZnQyIjogewogICAgICAiYmxvY2twZXJpb2RzZWNvbmRzIjogMiwKICAgICAgImVwb2NobGVuZ3RoIjogMzAwMDAsCiAgICAgICJyZXF1ZXN0dGltZW91dHNlY29uZHMiOiAxMAogICAgfQogIH0sCiAgIm5vbmNlIjogIjB4MCIsCiAgInRpbWVzdGFtcCI6ICIweDU4ZWU0MGJhIiwKICAiZ2FzTGltaXQiOiAiMHgxZmZmZmZmZmZmZmZmZiIsCiAgImRpZmZpY3VsdHkiOiAiMHgxIiwKICAiZXh0cmFEYXRhIjogIjB4Zjg3ZWEwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMGY4NTQ5NDFmMjMyMDM3ZGViYTVmMGRjZDc4NDI5OWY5MGNlNDI1ZTE2ZmZjNTA5NDQ2MzMwYmE1MmNiMWZiZTFmYjI0ZDk4YWQyMjFhNzY0MWJiYTU5Njc5NGY0NjgyZDYwZDdkMDUzMTgyZGRlY2Y0MmExMDZkZmFiN2YxZDIyMzE5NGYxZTY0N2RiYjRkODVlYTI3ZjQ0OTEyMWMwMjI2YjRlZTFhOGM3MTI4MDg0MDAwMDAwMDBjMCIKfQ==
