@@ -1,0 +1,80 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: neworgdemoneworg1ibft
+  namespace: neworgdemo-bes
+  annotations:
+    flux.weave.works/automated: "false"
+spec:
+  releaseName: neworgdemoneworg1ibft
+  chart:
+    git: ssh://git@github.com/azoumi/blockchain-automation-framework.git
+    ref: demo/besu
+    path: platforms/hyperledger-besu/charts/node_orion 
+  values:
+    replicaCount: 1
+
+    healthcheck:
+      readinessthreshold: 100
+      readinesscheckinterval: 5
+
+    staticnodes:
+      - "enode://a94433bb814fb979309a6de842c682fbe1dac16a53cec9f7ca569bd31e0d6f6c2dfe41686e57772bfd9bf6f563ca50adef7334c161d678753bcf5ae7182d1fc0@54.171.205.179:15028"
+
+    metadata:
+      namespace: neworgdemo-bes
+      labels:
+
+    liveliness_check:
+      enabled: false
+
+    proxy:
+      provider: ambassador
+      external_url: neworgdemo.bs.dev2.aws.blockchaincloudpoc-develop.com
+      p2p: 15028
+      rpc: 15029
+      tmport: 15032
+
+    images:
+      node: hyperledger/besu:1.4.4
+      alpineutils: hyperledgerlabs/alpine-utils:1.0
+      orion: pegasyseng/orion:1.5.2
+
+    node:
+      name: neworg1
+      consensus: ibft
+      subject: O=Neworg,OU=Neworg,L=51.50/-0.13/London,C=GB
+      mountPath: /etc/genesis
+      servicetype: ClusterIP
+      imagePullSecret: regcred
+      ports:
+        p2p: 30303
+        rpc: 8545
+        ws: 8546
+
+    orion:
+      name: orion
+      tls: True
+      confdir: /etc/config
+      url: "https://neworgdemo.bs.dev2.aws.blockchaincloudpoc-develop.com"
+      nodelist: "\"https://carrierdemo.bs.dev2.aws.blockchaincloudpoc-develop.com:15013\",\"https://storedemo.bs.dev2.aws.blockchaincloudpoc-develop.com:15033\",\"https://manufacturerdemo.bs.dev2.aws.blockchaincloudpoc-develop.com:15023\",\"https://warehousedemo.bs.dev2.aws.blockchaincloudpoc-develop.com:15043\""
+      trust: ca-or-tofu
+      ports:
+        nodeport: 15032
+        clientport: 8888
+
+    storage:
+      storageclassname: awsstorageclass
+      storagesize: 1Gi
+
+    vault:
+      address: http://vault.internal.dev2.aws.blockchaincloudpoc-develop.com:20001
+      secretprefix: secret/neworgdemo-bes/crypto/neworg1
+      serviceaccountname: vault-auth
+      keyname: data
+      oriondir: orion
+      tlsdir: tls
+      role: vault-role
+      authpath: besuneworgdemo
+
+    genesis: ewogICJjb25maWciOiB7CiAgICAiY2hhaW5JZCI6IDIwMTgsCiAgICAiY29uc3RhbnRpbm9wbGVmaXhibG9jayI6IDAsCiAgICAiY29udHJhY3RTaXplTGltaXQiOiAyMTQ3NDgzNjQ3LAogICAgImliZnQyIjogewogICAgICAiYmxvY2twZXJpb2RzZWNvbmRzIjogMiwKICAgICAgImVwb2NobGVuZ3RoIjogMzAwMDAsCiAgICAgICJyZXF1ZXN0dGltZW91dHNlY29uZHMiOiAxMAogICAgfQogIH0sCiAgIm5vbmNlIjogIjB4MCIsCiAgInRpbWVzdGFtcCI6ICIweDU4ZWU0MGJhIiwKICAiZ2FzTGltaXQiOiAiMHgxZmZmZmZmZmZmZmZmZiIsCiAgImRpZmZpY3VsdHkiOiAiMHgxIiwKICAiZXh0cmFEYXRhIjogIjB4Zjg3ZWEwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMGY4NTQ5NDExNzEyZjRjZDRjZDNjZWEwMmM3NTcyODZmMDUwNDRiMTM2ZjQ3MDQ5NDRkNjc5YTJkZGY1YjM1N2M1ZTFmMjJiOTY1NzEzMDM2ZjA3NWM4Njk5NGUzZDA0MGY3NTI0YWM4ZGM2YjBhMzExZjU0MWMyZDVmYmE0NjkyMjY5NGFlNmMzNzVhYjVlOWEyYmQ2MGNlNjc2NDE0OGQ2Y2FiNzFkNjMwYmQ4MDg0MDAwMDAwMDBjMCIKfQ==
